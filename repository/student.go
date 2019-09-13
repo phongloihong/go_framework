@@ -19,28 +19,28 @@ func init() {
 	collection = db.Database.Collection("student")
 }
 
-func Fetch() []*types.Student {
+func Fetch() ([]*types.Student, error) {
 	var students []*types.Student
 	cur, err := collection.Find(context.TODO(), bson.D{})
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	for cur.Next(context.TODO()) {
 		var student types.Student
 		err := cur.Decode(&student)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		students = append(students, &student)
 	}
 	if err := cur.Err(); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	cur.Close(context.TODO())
 
-	return students
+	return students, nil
 }
 
 func Insert(studentRequest types.StudentAddReq) (*mongo.InsertOneResult, error) {

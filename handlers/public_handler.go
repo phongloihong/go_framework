@@ -11,7 +11,13 @@ import (
 
 // GetStudent return all studen in json
 func GetStudents(c echo.Context) error {
-	students := repository.Fetch()
+	students, err := repository.Fetch()
+	if err != nil {
+		return c.JSON(
+			http.StatusBadRequest,
+			types.ErrorResponse{Code: "BadRequest", Message: err.Error()},
+		)
+	}
 
 	return c.JSON(http.StatusOK, students)
 }
